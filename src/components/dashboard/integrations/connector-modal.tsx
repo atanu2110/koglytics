@@ -12,6 +12,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useUser } from '@/hooks/use-user';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -25,7 +26,7 @@ const style = {
     p: 4,
 };
 
-export default function ConnectorModal() {
+export default function ConnectorModal({ setIndicator }) {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -34,6 +35,9 @@ export default function ConnectorModal() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const [buttontext, setButtontext] = useState('Connect');
+    const { test, handleTables } = useUser();
 
     const handleConnect = () => {
         
@@ -58,7 +62,14 @@ export default function ConnectorModal() {
               throw new Error('Failed to submit data');
             }
             // Handle success
+            return response.json();
+          })
+          .then(data => {
+            // Refresh the auth state
+            handleTables?.(data);
             console.log('Data submitted successfully');
+            setIndicator(true);
+            setButtontext('Disconnect');
           })
           .catch(error => {
             setLoading(false);
@@ -72,7 +83,7 @@ export default function ConnectorModal() {
     return (
         <div>
             <Button startIcon={<PlugsConnectedIcon fontSize="var(--icon-fontSize-md)" />} variant="contained" onClick={handleOpen}>
-                Connect
+                {buttontext}
             </Button>
             <Dialog
                 open={open}

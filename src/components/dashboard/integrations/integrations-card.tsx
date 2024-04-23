@@ -1,5 +1,5 @@
 'use client';
-import * as React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -12,6 +12,7 @@ import { PlugsConnected  as PlugsConnectedIcon } from '@phosphor-icons/react/dis
 import dayjs from 'dayjs';
 import Button from '@mui/material/Button';
 import ConnectorModal from './connector-modal';
+import Badge from '@mui/material/Badge';
 
 export interface Integration {
   id: string;
@@ -29,10 +30,12 @@ export interface IntegrationCardProps {
 
 export function IntegrationCard({ integration }: IntegrationCardProps): React.JSX.Element {
 
-  function handleClick() {
-    console.log("Clicked me!");
-    alert("Clicked me!");
-  }
+  const shapeStyles = { bgcolor: '', width: 40, height: 40 };
+  const shapeCircleStyles = { borderRadius: '50%' };
+  const [indicator, setIndicator] = useState(false);
+  const circle = (
+    <Box component="span" sx={{ ...shapeStyles, ...shapeCircleStyles }} />
+  );
 
 
   return (
@@ -54,22 +57,27 @@ export function IntegrationCard({ integration }: IntegrationCardProps): React.JS
       </CardContent>
       <Divider />
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'space-between', p: 2 }}>
-        <Stack sx={{ alignItems: 'center' }} direction="row" spacing={1}>
+
+        {indicator ? <Badge color="success" overlap="circular" badgeContent=" ">
+        {circle}
+      </Badge> : <Stack sx={{ alignItems: 'center' }} direction="row" spacing={1}>
           <ClockIcon fontSize="var(--icon-fontSize-sm)" />
           <Typography color="text.secondary" display="inline" variant="body2">
             Last Connected {dayjs(integration.updatedAt).format('MMM D, YYYY')}
           </Typography>
-        </Stack>
+        </Stack>}
+
+
         {/* <Stack sx={{ alignItems: 'center' }} direction="row" spacing={1}>
           <DownloadIcon fontSize="var(--icon-fontSize-sm)" />
           <Typography color="text.secondary" display="inline" variant="body2">
             {integration.installs} installs
           </Typography>
         </Stack> */}
-          {/* <Button startIcon={<PlugsConnectedIcon fontSize="var(--icon-fontSize-md)" />} variant="contained" onClick={handleClick}>
+        {/* <Button startIcon={<PlugsConnectedIcon fontSize="var(--icon-fontSize-md)" />} variant="contained" onClick={handleClick}>
             Connect
           </Button> */}
-          <ConnectorModal />
+        <ConnectorModal setIndicator={setIndicator} />
       </Stack>
     </Card>
   );

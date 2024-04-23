@@ -10,7 +10,9 @@ export interface UserContextValue {
   user: User | null;
   error: string | null;
   isLoading: boolean;
+  test: string[];
   checkSession?: () => Promise<void>;
+  handleTables: (tableList: any) => void;
 }
 
 export const UserContext = React.createContext<UserContextValue | undefined>(undefined);
@@ -20,10 +22,11 @@ export interface UserProviderProps {
 }
 
 export function UserProvider({ children }: UserProviderProps): React.JSX.Element {
-  const [state, setState] = React.useState<{ user: User | null; error: string | null; isLoading: boolean }>({
+  const [state, setState] = React.useState<{ user: User | null; error: string | null; isLoading: boolean , test: string[]}>({
     user: null,
     error: null,
     isLoading: true,
+    test: []
   });
 
   const checkSession = React.useCallback(async (): Promise<void> => {
@@ -51,7 +54,12 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Expected
   }, []);
 
-  return <UserContext.Provider value={{ ...state, checkSession }}>{children}</UserContext.Provider>;
+  const handleTables = React.useCallback((tableList: any) => {
+      setState((prev) => ({ ...prev, test: tableList }));
+  }, []);
+  
+
+  return <UserContext.Provider value={{ ...state, checkSession, handleTables }}>{children}</UserContext.Provider>;
 }
 
 export const UserConsumer = UserContext.Consumer;
