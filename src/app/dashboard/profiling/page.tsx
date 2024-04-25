@@ -65,6 +65,18 @@ export default function Page(): React.JSX.Element {
   const [error, setError] = useState(null);
   const [duplicateCount, setDuplicateCount] = useState(0);
   const [distribution, setDistribution] = useState('');
+  
+
+  const conditions = ["does not contain NULL", "IS NOT EMPTY"];
+
+  const [condition, setCondition] = React.useState('');
+
+  const [columnpage, setColumnpage] = useState(false);
+
+  const [selectedcolumn, setSelectedcolumn] = useState('');
+
+  const [coldescribe, setColdescribe] = useState(null);
+  const [outliers, setOutliers] = useState(0);
 
   const handleChange = (event: SelectChangeEvent) => {
     setTable(event.target.value as string);
@@ -104,13 +116,176 @@ export default function Page(): React.JSX.Element {
   };
 
   const handleCellClick = (e) => {
-    alert(e.target.textContent);
-    console.log(distribution[3]);
+    const column = e.target.textContent;
+    setLoading(true);
+    
+    setSelectedcolumn(column);
+
+    Promise.all([
+        fetch('http://localhost:9009/api/v1/profile/'+ table +'/'+ column +'/describe').then(response => response.json()),
+        fetch('http://localhost:9009/api/v1/profile/'+ table +'/'+ column +'/outliers').then(response => response.json())
+      ])
+        .then(([data1Response, data2Response]) => {
+            setColdescribe(data1Response);
+            setOutliers(data2Response);
+            setColumnpage(true);
+          setLoading(false);
+        })
+        .catch(error => {
+          setError(error.message);
+          setLoading(false);
+        });
 }
 
-  return (
-    <Stack spacing={3}>
+    const handleCondition = (event: SelectChangeEvent) => {
+        setCondition(event.target.value as string);
+  };
+
+  const handleBack = () => setColumnpage(false);
+
+    if (columnpage) {
+        return <Stack spacing={3}>
+            <Stack direction="row">
+            <Button startIcon={<UploadIcon fontSize="var(--icon-fontSize-md)" />} variant="contained" onClick={handleBack}>
+                Back
+            </Button>
+            </Stack>
+            <Stack direction="row" spacing={3}>
+                <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
+                    <Typography variant="h4">Column Data Quality for {selectedcolumn}</Typography>
+                </Stack>
+            </Stack>
+            {coldescribe != null &&
+                <div>
+                    <Grid container spacing={3}>
+                      <Grid lg={3} sm={6} xs={12}>
+                          <Card>
+                              <CardContent>
+                                  <Stack spacing={2}>
+                                      <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
+                                          <Stack spacing={1}>
+                                              <Typography color="text.secondary" gutterBottom variant="overline">
+                                                  Column Name
+                                              </Typography>
+                                              <Typography variant="h4">{selectedcolumn}</Typography>
+                                          </Stack>                                    
+                                      </Stack>
+                                  </Stack>
+                              </CardContent>
+                          </Card>
+                      </Grid>
+              <Grid lg={3} sm={6} xs={12}>
+              <Card>
+                      <CardContent>
+                          <Stack spacing={2}>
+                              <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
+                                  <Stack spacing={1}>
+                                      <Typography color="text.secondary" gutterBottom variant="overline">
+                                          Missing Values Count
+                                      </Typography>
+                                      <Typography variant="h4">{coldescribe.missingValuesCount}</Typography>
+                                  </Stack>                            
+                              </Stack>                    
+                          </Stack>
+                      </CardContent>
+                  </Card>
+              </Grid>
+              <Grid lg={3} sm={6} xs={12}>
+              <Card>
+                      <CardContent>
+                          <Stack spacing={2}>
+                              <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
+                                  <Stack spacing={1}>
+                                      <Typography color="text.secondary" gutterBottom variant="overline">
+                                      Unique Values Count
+                                      </Typography>
+                                      <Typography variant="h4">{coldescribe.uniqueValuesCount}</Typography>
+                                  </Stack>                                
+                              </Stack>                    
+                          </Stack>
+                      </CardContent>
+                  </Card>
+              </Grid>
+              <Grid lg={3} sm={6} xs={12}>
+              <Card>
+                      <CardContent>
+                          <Stack spacing={2}>
+                              <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
+                                  <Stack spacing={1}>
+                                      <Typography color="text.secondary" gutterBottom variant="overline">
+                                      Data Quality
+                                      </Typography>
+                                      <Typography variant="h4">{parseFloat(coldescribe.dataQualityPercentage).toFixed(2)}%</Typography>
+                                  </Stack>                                
+                              </Stack>                    
+                          </Stack>
+                      </CardContent>
+                  </Card>
+              </Grid>
+          </Grid>
+          <Grid>
+          <Grid lg={3} sm={6} xs={12}>
+              <Card>
+                      <CardContent>
+                          <Stack spacing={2}>
+                              <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
+                                  <Stack spacing={1}>
+                                      <Typography color="text.secondary" gutterBottom variant="overline">
+                                      Number of Outlier Records
+                                      </Typography>
+                                      <Typography variant="h4">{outliers}</Typography>
+                                  </Stack>                                
+                              </Stack>                    
+                          </Stack>
+                      </CardContent>
+                  </Card>
+              </Grid>
+          </Grid>
+          <Grid>
+          <Grid lg={3} sm={6} xs={12}>
+              <Card>
+                      <CardContent>
+                          <Stack spacing={2}>
+                              <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
+                                  <Stack spacing={1}>
+                                      <Typography color="text.secondary" gutterBottom variant="overline">
+                                      Categorical Counts
+                                      </Typography>
+                                      {/* <Typography variant="h4">{coldescribe.categoricalCount}</Typography> */}
+                                      <TableContainer component={Paper}>
+                                                    <Table sx={{ minWidth: 300 }} aria-label="simple table">
+                                                        <TableHead>
+                                                            <TableRow>
+                                                                <TableCell>Unique</TableCell>
+                                                                <TableCell align="right">Count</TableCell>
+                                                            </TableRow>
+                                                        </TableHead>
+                                                        <TableBody>
+                                                            {Object.entries(coldescribe.categoricalCount).map(([category, count]) => (
+                                                                <TableRow key={category}>
+                                                                    <TableCell>{category}</TableCell>
+                                                                    <TableCell>{count}</TableCell>
+                                                                </TableRow>
+                                                            ))}
+                                                        </TableBody>
+                                                    </Table>
+                                                </TableContainer>
+                                  </Stack>                                
+                              </Stack>                    
+                          </Stack>
+                      </CardContent>
+                  </Card>
+              </Grid>
+          </Grid>
+
+                </div>}
+            
+        </Stack>;
+    }
+    return (
+        <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
+      
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
           <Typography variant="h4">Data Quality</Typography>
           {/* <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
@@ -165,29 +340,7 @@ export default function Page(): React.JSX.Element {
 
           {(table != '' && data != null) &&
               <div>
-                  <Grid container spacing={3}>
-                      <Grid lg={3} sm={6} xs={12}>
-                          <Typography variant="h4">Data Quality <Select
-                              labelId="demo-simple-select-label"
-                              id="demo-simple-select"
-                              value={table}
-                              label="Select Table"
-                              onChange={handleChange}
-                          >
-                              {/* <MenuItem value={10}>Ten</MenuItem>
-                      <MenuItem value={20}>Twenty</MenuItem>
-                      <MenuItem value={30}>Thirty</MenuItem> */}
-                              {test.map((value: any) => (
-                                  <MenuItem
-                                      key={value}
-                                      value={value}>
-                                      {value}
-                                  </MenuItem>
-                              ))}
-                          </Select></Typography>
-                      </Grid>
-                  </Grid>
-                  <br />
+                  
                   <Grid container spacing={3}>
                       <Grid lg={3} sm={6} xs={12}>
                           <Card>
@@ -308,7 +461,33 @@ export default function Page(): React.JSX.Element {
                           </Table>
                       </TableContainer>
                   </Grid>
-
+                  <br />
+                  <Grid container spacing={3}>
+                      <Grid lg={3} sm={6} xs={12}>
+                          <Typography variant="h4">Data Quality : Field </Typography>
+                      </Grid>
+                      <Grid lg={3} sm={6} xs={12}>
+                          <Select
+                              labelId="demo-simple-select-label"
+                              id="demo-simple-select"
+                              value={condition}
+                              label="Select Condition"
+                              onChange={handleCondition}
+                          >
+                              {/* <MenuItem value={10}>Ten</MenuItem>
+                      <MenuItem value={20}>Twenty</MenuItem>
+                      <MenuItem value={30}>Thirty</MenuItem> */}
+                              {conditions.map((value: any) => (
+                                  <MenuItem
+                                      key={value}
+                                      value={value}>
+                                      {value}
+                                  </MenuItem>
+                              ))}
+                          </Select>
+                      </Grid>
+                  </Grid>
+                  <br />                                   
               </div>
           }
 

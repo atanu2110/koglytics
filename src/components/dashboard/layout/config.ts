@@ -7,7 +7,7 @@ export const navItems = [
   { key: 'profiling', title: 'Profiling', href: paths.dashboard.profiling, icon: 'users' },
   { key: 'integrations', title: 'Integrations', href: paths.dashboard.integrations, icon: 'plugs-connected' },
   { key: 'settings', title: 'Settings', href: paths.dashboard.settings, icon: 'gear-six' },
-  { key: 'reporting', title: 'Reports', href: paths.dashboard.settings, icon: 'schedule-send' },
+  { key: 'reporting', title: 'Reports', href: paths.dashboard.reports, icon: 'schedule-send' },
   { key: 'account', title: 'Account', href: paths.dashboard.account, icon: 'user' },
   { key: 'error', title: 'Error', href: paths.errors.notFound, icon: 'x-square' },
 ] satisfies NavItemConfig[];

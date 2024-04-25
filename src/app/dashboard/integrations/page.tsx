@@ -51,6 +51,14 @@ const integrations = [
     installs: 406,
     updatedAt: dayjs().subtract(7, 'minute').subtract(4, 'hour').subtract(1, 'day').toDate(),
   },
+  {
+    id: 'INTEG-0010',
+    title: 'Kafka',
+    description: 'Apache Kafka is a distributed event store and stream-processing platform.',
+    logo: '/assets/apache_kafka.png',
+    installs: 594,
+    updatedAt: dayjs().subtract(12, 'minute').toDate(),
+  },
   // {
   //   id: 'INTEG-002',
   //   title: 'GitHub',
