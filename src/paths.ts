@@ -8,7 +8,11 @@ export const paths = {
     integrations: '/dashboard/integrations',
     settings: '/dashboard/settings',
     profiling: '/dashboard/profiling',
-    reports: '/dashboard/reports'
+    reports: '/dashboard/reports',
+    rules: '/dashboard/rules',
+    glossary: '/dashboard/glossary',
+    prepareml: '/dashboard/prepareml',
+    lineage: '/dashboard/lineage'
   },
   errors: { notFound: '/errors/not-found' },
 } as const;
