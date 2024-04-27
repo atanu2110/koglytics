@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import { Download as DownloadIcon } from '@phosphor-icons/react/dist/ssr/Download';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
+import { ChartScatter  as ChartScatterIcon }  from '@phosphor-icons/react/dist/ssr/ChartScatter';
 import dayjs from 'dayjs';
 
 import { config } from '@/config';
@@ -487,9 +488,29 @@ export default function Page(): React.JSX.Element {
                           </Select>
                       </Grid>
                   </Grid>
-                  <br />                                   
-              </div>
-          }
+                    <Grid container spacing={3}>
+                        <Grid lg={3} sm={6} xs={12}>
+                            <Typography variant="h4">Insurance usage prediction </Typography>
+                        </Grid>
+                        <Grid lg={3} sm={6} xs={12}>
+                            <Button startIcon={<ChartScatterIcon fontSize="var(--icon-fontSize-md)" />} variant="contained" onClick={handleBack}>
+                                Predict
+                            </Button>
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={3}>
+                        <Grid lg={3} sm={6} xs={12}>
+                            <Typography variant="h4">Fraudulent claim detection </Typography>
+                        </Grid>
+                        <Grid lg={3} sm={6} xs={12}>
+                            <Button startIcon={<ChartScatterIcon fontSize="var(--icon-fontSize-md)" />} variant="contained" onClick={handleBack}>
+                                Predict
+                            </Button>
+                        </Grid>
+                    </Grid>
+                    <br />
+                </div>
+            }
 
           
       </Stack>
