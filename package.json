@@ -13,7 +13,9 @@
     "lint:fix": "next lint --fix",
     "typecheck": "tsc --noEmit",
     "format:write": "prettier --write \"**/*.{js,jsx,mjs,ts,tsx,mdx}\" --cache",
-    "format:check": "prettier --check \"**/*.{js,jsx,mjs,ts,tsx,mdx}\" --cache"
+    "format:check": "prettier --check \"**/*.{js,jsx,mjs,ts,tsx,mdx}\" --cache",
+    "predeploy" : "npm run build",
+    "deploy" : "gh-pages -d build"
   },
   "dependencies": {
     "@emotion/cache": "11.11.0",
