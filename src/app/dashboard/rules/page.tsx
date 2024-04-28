@@ -73,7 +73,7 @@ function createData(
   ];
 
 export default function Page(): React.JSX.Element {
-  const page = 0;
+  {/*const page = 0;
   const rowsPerPage = 5;
 
   const paginatedCustomers = applyPagination(customers, page, rowsPerPage);
@@ -102,41 +102,24 @@ export default function Page(): React.JSX.Element {
   const [coldescribe, setColdescribe] = useState(null);
   const [outliers, setOutliers] = useState(0);
 
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedValue, setSelectedValue] = useState('');
+
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+  };
+
+  const handleValueChange = (event) => {
+    setSelectedValue(event.target.value);
+  };
+
+  const generateText = () => {
+    return `You selected ${selectedValue} from the ${selectedCategory} category.`;
+  };
+
   const handleChange = (event: SelectChangeEvent) => {
     setTable(event.target.value as string);
     setLoading(true);
-    // fetch('http://localhost:9009/api/v1/profile/d/schema')
-    //   .then(response => {
-    //     if (!response.ok) {
-    //       throw new Error('Failed to fetch data');
-    //     }
-    //     return response.json();
-    //   })
-    //   .then(jsonData => {
-    //     setData(jsonData);
-    //     setLoading(false);
-    //     console.log(jsonData);
-    //   })
-    //   .catch(error => {
-    //     setError(error.message);
-    //     setLoading(false);
-    //   });
-
-    // Promise.all([
-    //     fetch('http://localhost:9009/api/v1/profile/d/schema').then(response => response.json()),
-    //     fetch('http://localhost:9009/api/v1/profile/s/duplicate/count').then(response => response.json()),
-    //     fetch('http://localhost:9009/api/v1/profile/s/distribution').then(response => response.json())
-    //   ])
-    //     .then(([data1Response, data2Response, data3Response]) => {
-    //         setData(data1Response);
-    //         setDuplicateCount(data2Response);
-    //         setDistribution(data3Response);
-    //       setLoading(false);
-    //     })
-    //     .catch(error => {
-    //       setError(error.message);
-    //       setLoading(false);
-    //     });
     setLoading(false);
   };
 
@@ -156,14 +139,6 @@ const handleBack = () => setRecords(true);
       
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
           <Typography variant="h4">Data Quality Rules</Typography>
-          {/* <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-            <Button color="inherit" startIcon={<UploadIcon fontSize="var(--icon-fontSize-md)" />}>
-              Import
-            </Button>
-            <Button color="inherit" startIcon={<DownloadIcon fontSize="var(--icon-fontSize-md)" />}>
-              Export
-            </Button>
-          </Stack> */}
         </Stack>
 
 
@@ -178,9 +153,7 @@ const handleBack = () => setRecords(true);
                       label="Select Table"
                       onChange={handleChange}
                   >
-                      {/* <MenuItem value={10}>Ten</MenuItem>
-                      <MenuItem value={20}>Twenty</MenuItem>
-                      <MenuItem value={30}>Thirty</MenuItem> */}
+                
                       {test.map((value: any) => (
                           <MenuItem
                               key={value}
@@ -251,6 +224,7 @@ const handleBack = () => setRecords(true);
                         </Grid>
                   </Grid>
                     <br />
+                    
                     {
                         records && 
                         <div>
@@ -299,6 +273,105 @@ const handleBack = () => setRecords(true);
 
           
       </Stack>
+  );
+
+        */}
+
+        const [conditions, setConditions] = useState([{ field: '', operator: '', value: '', logicalOperator: 'AND' }]);
+
+  const handleAddCondition = () => {
+    setConditions([...conditions, { field: '', operator: '', value: '', logicalOperator: 'AND' }]);
+  };
+
+  const handleRemoveCondition = (index) => {
+    const newConditions = [...conditions];
+    newConditions.splice(index, 1);
+    setConditions(newConditions);
+  };
+
+  const handleConditionChange = (index, field, value) => {
+    const newConditions = [...conditions];
+    newConditions[index][field] = value;
+    setConditions(newConditions);
+  };
+
+  const handleLogicalOperatorChange = (index, value) => {
+    const newConditions = [...conditions];
+    newConditions[index].logicalOperator = value;
+    setConditions(newConditions);
+  };
+
+  const buildQuery = () => {
+    let query = 'SELECT * FROM table WHERE ';
+    conditions.forEach((condition, index) => {
+      query += `${condition.field} ${condition.operator} '${condition.value}'`;
+      if (index < conditions.length - 1) {
+        query += ` ${condition.logicalOperator} `;
+      }
+    });
+    return query;
+  };
+  return (
+    <div>
+      <Typography variant="h6">Dynamic Query Builder</Typography>
+      {conditions.map((condition, index) => (
+        <div key={index} style={{ marginBottom: '16px' }}>
+          <FormControl style={{ minWidth: '150px', marginRight: '8px' }}>
+            <InputLabel>Field</InputLabel>
+            <Select
+              value={condition.field}
+              onChange={(e) => handleConditionChange(index, 'field', e.target.value)}
+            >
+              <MenuItem value="">Select Field</MenuItem>
+              <MenuItem value="age">Age</MenuItem>
+              <MenuItem value="sex">Sex</MenuItem>
+              <MenuItem value="bmi">BMI</MenuItem>
+              <MenuItem value="children">Children</MenuItem>
+              <MenuItem value="smoker">Smoker</MenuItem>
+              <MenuItem value="region">Region</MenuItem>
+              <MenuItem value="charges">Charges</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl style={{ minWidth: '150px', marginRight: '8px' }}>
+            <InputLabel>Operator</InputLabel>
+            <Select
+              value={condition.operator}
+              onChange={(e) => handleConditionChange(index, 'operator', e.target.value)}
+            >
+              <MenuItem value="">Select Operator</MenuItem>
+              <MenuItem value="=">Equal to</MenuItem>
+              <MenuItem value="!=">Not equal to</MenuItem>
+              <MenuItem value=">">Greater than</MenuItem>
+              <MenuItem value="<">Less than</MenuItem>
+              <MenuItem value=">=">Greater than or equal to</MenuItem>
+              <MenuItem value="<=">Less than or equal to</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            value={condition.value}
+            onChange={(e) => handleConditionChange(index, 'value', e.target.value)}
+            label="Value"
+            style={{ marginRight: '8px' }}
+          />
+          <FormControl style={{ minWidth: '100px', marginRight: '8px' }}>
+            <InputLabel>Logical Operator</InputLabel>
+            <Select
+              value={condition.logicalOperator}
+              onChange={(e) => handleLogicalOperatorChange(index, e.target.value)}
+            >
+              <MenuItem value="AND">AND</MenuItem>
+              <MenuItem value="OR">OR</MenuItem>
+            </Select>
+          </FormControl>
+          <Button onClick={() => handleRemoveCondition(index)} variant="outlined">Remove</Button>
+        </div>
+      ))}
+      <Button onClick={handleAddCondition} variant="contained">Add Condition</Button>
+      <div style={{ marginTop: '16px' }}>
+        <Typography variant="body1">Generated Query:</Typography>
+        <TextField value={buildQuery()} variant="outlined" multiline rows={4} fullWidth />
+      </div>
+    </div>
   );
 }
 
