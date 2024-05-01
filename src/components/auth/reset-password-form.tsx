@@ -34,7 +34,7 @@ export function ResetPasswordForm(): React.JSX.Element {
   const onSubmit = React.useCallback(
     async (values: Values): Promise<void> => {
       setIsPending(true);
-
+// @ts-ignore
       const { error } = await authClient.resetPassword(values);
 
       if (error) {

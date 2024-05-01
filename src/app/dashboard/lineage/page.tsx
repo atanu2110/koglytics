@@ -12,13 +12,11 @@ import Grid from '@mui/material/Grid';
 export default function Page(): React.JSX.Element {
 
      const metadata = { title: `Settings | Dashboard | ${config.site.name}` } satisfies Metadata;
-  
-
-  const report = [
-    { reportName: 'Report 1', schedule: 'Daily', frequency: 'Every day', status: "success" },
-    { reportName: 'Report 2', schedule: 'Weekly', frequency: 'Every Monday', status: "pending" },
-    { reportName: 'Report 3', schedule: 'Monthly', frequency: 'First day of the month', status: "failed" },
-  ];
+     const mockLineageData = [
+      { source: 'Source A', transformations: ['Transformation 1', 'Transformation 2', 'Transformation 3'] },
+      { source: 'Source B', transformations: ['Transformation 4', 'Transformation 5'] },
+      { source: 'Source C', transformations: ['Transformation 6'] },
+    ];
 
   return (
     <Container maxWidth="lg">
@@ -36,6 +34,25 @@ export default function Page(): React.JSX.Element {
       <br/>
       
       </Grid>
+      <div>
+      <h2>Data Lineage</h2>
+      <ul>
+        {mockLineageData.map((item, index) => (
+          <li key={index}>
+            {/* Display source */}
+            <span>{item.source}</span>
+
+            {/* Display arrows and transformations */}
+            {item.transformations.map((transformation, idx) => (
+              <span key={idx}>
+                {idx === 0 ? ' -> ' : ' => '}
+                {transformation}
+              </span>
+            ))}
+          </li>
+        ))}
+      </ul>
+    </div>
     </Container>
   );
 }

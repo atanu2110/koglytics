@@ -25,9 +25,7 @@ import { useUser } from '@/hooks/use-user';
 import { TasksProgress } from '@/components/dashboard/overview/tasks-progress';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardContent from '@mui/material/CardContent';
-import Avatar from '@mui/material/Avatar';
-import { ListBullets as ListBulletsIcon } from '@phosphor-icons/react/dist/ssr/ListBullets';
-import { Database as DatabaseIcon } from '@phosphor-icons/react/dist/ssr/Database';
+import Chip from '@mui/material/Chip';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import Table from '@mui/material/Table';
@@ -37,7 +35,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-
 
 const customers = [
   {
@@ -70,6 +67,24 @@ function createData(
     createData(778, 33,'female',28.6,3,'no','southwest',4687.797),
     createData(889, 41,'male',21.78,3,'no','southeast',6272.4772),
     createData(1200, 25,'male',33.66,3,'no','southeast',4504.6624),
+  ];
+
+  function createRulesData(
+    name: string,
+    table: string,
+    rule: string,
+    status: string,
+    createdAt: string,
+    createdBy: string
+  ) {
+    return {name, table, rule, status, createdAt, createdBy };
+  }
+  
+  const rules = [
+    createRulesData('Rule-Show Null', 'user','where email = NULL','APPROVED', '01-01-2024', 'ATANU'),
+    createRulesData('Rule-Smoker', 'insurance','where smoker = yes','APPROVED', '10-02-2024', 'ATANU'),
+    createRulesData('Fees check', 'insurance','where charges > 25000','PENDING', '15-03-2024', 'satish'),
+    createRulesData('Rule-Show payment', 'payment','where payment = false and year = 2024','APPROVED', '16-03-2024', 'Arindam')
   ];
 
 export default function Page(): React.JSX.Element {
@@ -278,6 +293,16 @@ const handleBack = () => setRecords(true);
         */}
 
         const [conditions, setConditions] = useState([{ field: '', operator: '', value: '', logicalOperator: 'AND' }]);
+        const [table, setTable] = React.useState('');
+        const [loading, setLoading] = useState(false);
+        const { test } = useUser();
+        const [records, setRecords] = useState(false);
+
+        const handleChange = (event: SelectChangeEvent) => {
+            setTable(event.target.value as string);
+            setLoading(true);
+            setLoading(false);
+          };
 
   const handleAddCondition = () => {
     setConditions([...conditions, { field: '', operator: '', value: '', logicalOperator: 'AND' }]);
@@ -301,8 +326,14 @@ const handleBack = () => setRecords(true);
     setConditions(newConditions);
   };
 
+  const handleShowRecord = () => {
+    setRecords(true);
+  };
+  
+
   const buildQuery = () => {
-    let query = 'SELECT * FROM table WHERE ';
+    //let query = 'SELECT * FROM table WHERE ';
+    let query = 'SHOW RECORDS FROM selected table WHERE ';
     conditions.forEach((condition, index) => {
       query += `${condition.field} ${condition.operator} '${condition.value}'`;
       if (index < conditions.length - 1) {
@@ -313,11 +344,102 @@ const handleBack = () => setRecords(true);
   };
   return (
     <div>
-      <Typography variant="h6">Dynamic Query Builder</Typography>
-      {conditions.map((condition, index) => (
-        <div key={index} style={{ marginBottom: '16px' }}>
-          <FormControl style={{ minWidth: '150px', marginRight: '8px' }}>
-            <InputLabel>Field</InputLabel>
+        <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
+          <Typography variant="h4">Data Quality Rules</Typography>
+        </Stack>
+
+        <Typography variant="h4">Rules</Typography>
+                        <TableContainer component={Paper}>
+                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Name</TableCell>
+                                    <TableCell align="right">Table</TableCell>
+                                    <TableCell align="right">Rule</TableCell>
+                                    <TableCell align="right">Status</TableCell>
+                                    <TableCell align="right">Created At</TableCell>
+                                    <TableCell align="right">Created By</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                      {rules.map((row) => (
+                          <TableRow
+                              key={row.name}
+                              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                          >
+                              <TableCell component="th" scope="row">
+                                  {row.name}
+                              </TableCell>
+                              <TableCell align="right">{row.table}</TableCell>
+                              <TableCell align="right">{row.rule}</TableCell>
+                              <TableCell align="right"><Chip color='primary' label={row.status} size="small" /></TableCell>
+                              <TableCell align="right">
+                                  {row.createdAt}
+                              </TableCell>
+                              <TableCell align="right">{row.createdBy}</TableCell>
+                          </TableRow>
+                      ))}
+                  </TableBody>
+              </Table>
+          </TableContainer>
+          <br /><br />
+          {/* <Card sx={{ p: 1 }}>
+              <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">Select Table</InputLabel>
+                  <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={table}
+                      label="Select Table"
+                      onChange={handleChange}
+                  >
+                
+                      {test.map((value: any) => (
+                          <MenuItem
+                              key={value}
+                              value={value}>
+                              {value}
+                          </MenuItem>
+                      ))}
+                  </Select>
+              </FormControl>
+          </Card> */}
+
+          <div>
+              <Backdrop
+                  sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                  open={loading}
+              >
+                  <CircularProgress color="inherit" />
+              </Backdrop>
+          </div>
+          <br />
+          <Typography variant="h6">Rule Builder</Typography>
+          <br />
+          <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Select Table</InputLabel>
+              <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={table}
+                  label="Select Table"
+                  onChange={handleChange}
+              >
+
+                  {test.map((value: any) => (
+                      <MenuItem
+                          key={value}
+                          value={value}>
+                          {value}
+                      </MenuItem>
+                  ))}
+              </Select>
+          </FormControl>
+          <br /><br />
+          {conditions.map((condition, index) => (
+              <div key={index} style={{ marginBottom: '16px' }}>
+                  <FormControl style={{ minWidth: '150px', marginRight: '8px' }}>
+                      <InputLabel>Field</InputLabel>
             <Select
               value={condition.field}
               onChange={(e) => handleConditionChange(index, 'field', e.target.value)}
@@ -368,9 +490,93 @@ const handleBack = () => setRecords(true);
       ))}
       <Button onClick={handleAddCondition} variant="contained">Add Condition</Button>
       <div style={{ marginTop: '16px' }}>
-        <Typography variant="body1">Generated Query:</Typography>
+        <Typography variant="body1">Generated Rule:</Typography>
         <TextField value={buildQuery()} variant="outlined" multiline rows={4} fullWidth />
       </div>
+      <br/> 
+      <Grid container spacing={3}>
+      <Grid lg={2}><Button onClick={handleShowRecord} variant="contained">Run Rule</Button></Grid>
+      <Grid lg={3} sm={6} xs={12}><Button onClick={handleShowRecord} variant="contained">Save Rule</Button></Grid>
+      </Grid>
+      
+      <br/> 
+      {
+              records &&
+              <div>
+                  <Grid container spacing={3}>
+                      <Grid lg={3} sm={6} xs={12}>
+                          <Card>
+                              <CardContent>
+                                  <Stack spacing={2}>
+                                      <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
+                                          <Stack spacing={1}>
+                                              <Typography color="text.secondary" gutterBottom variant="overline">
+                                                  Matched Records
+                                              </Typography>
+                                              <Typography variant="h4">1200</Typography>
+                                          </Stack>
+                                      </Stack>
+                                  </Stack>
+                              </CardContent>
+                          </Card>
+                      </Grid>
+                      <Grid lg={3} sm={6} xs={12}>
+                          <Card>
+                              <CardContent>
+                                  <Stack spacing={2}>
+                                      <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
+                                          <Stack spacing={1}>
+                                              <Typography color="text.secondary" gutterBottom variant="overline">
+                                                  Unmatched Records
+                                              </Typography>
+                                              <Typography variant="h4">300</Typography>
+                                          </Stack>
+                                      </Stack>
+                                  </Stack>
+                              </CardContent>
+                          </Card>
+                      </Grid></Grid>
+                      <br/>
+
+                        <Typography variant="h4">Showing Matching Records</Typography>
+                        <TableContainer component={Paper}>
+                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Id</TableCell>
+                                    <TableCell align="right">Age</TableCell>
+                                    <TableCell align="right">Sex</TableCell>
+                                    <TableCell align="right">BMI</TableCell>
+                                    <TableCell align="right">Children</TableCell>
+                                    <TableCell align="right">Smoker</TableCell>
+                                    <TableCell align="right">Region</TableCell>
+                                    <TableCell align="right">Charges</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {rows.map((row) => (
+                                    <TableRow
+                                        key={row.id}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    >
+                                        <TableCell component="th" scope="row">
+                                            {row.id}
+                                        </TableCell>
+                                        <TableCell align="right">{row.age}</TableCell>
+                                        <TableCell align="right">{row.sex}</TableCell>
+                                        <TableCell align="right">{row.bmi}</TableCell>
+                                        <TableCell align="right">{row.children}</TableCell>
+                                        <TableCell align="right">{row.smoker}</TableCell>
+                                        <TableCell align="right">{row.region}</TableCell>
+                                        <TableCell align="right">{row.charges}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    </div>
+                    }   
+
     </div>
   );
 }

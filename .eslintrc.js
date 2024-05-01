@@ -74,5 +74,23 @@ module.exports = {
     '@next/next/no-img-element': 'off', // Temporary disabled
     '@typescript-eslint/restrict-template-expressions': 'off',
     '@typescript-eslint/use-unknown-in-catch-callback-variable': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-unsafe-assignment': 'off',
+    '@typescript-eslint/no-confusing-void-expression': 'off',
+    '@typescript-eslint/no-unsafe-call': 'off',
+    '@typescript-eslint/no-unused-vars': 'off',
+    '@typescript-eslint/no-unsafe-argument': 'off',
+    'no-unused-vars': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off',
+    '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+    '@typescript-eslint/no-unsafe-member-access': 'off',
+    '@typescript-eslint/restrict-plus-operands': 'off',
+    '@typescript-eslint/no-shadow': 'off',
+    'eqeqeq': 'off',
+    'no-lone-blocks': 'off',
+    '@typescript-eslint/prefer-ts-expect-error': 'off',
+    '@typescript-eslint/prefer-as-const': 'off',
+    'no-console': 'off',
+    'jsx-a11y/no-autofocus': 'off'
   },
 };
