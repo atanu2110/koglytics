@@ -72,19 +72,24 @@ function createData(
   function createRulesData(
     name: string,
     table: string,
+    dimension: string,
     rule: string,
     status: string,
+    total: string,
+    pass: string,
+    threshold: string,
+    result: string,
     createdAt: string,
     createdBy: string
   ) {
-    return {name, table, rule, status, createdAt, createdBy };
+    return {name, table, dimension, rule, status,total, pass, threshold, result,createdAt, createdBy };
   }
   
   const rules = [
-    createRulesData('Rule-Show Null', 'user','where email = NULL','APPROVED', '01-01-2024', 'ATANU'),
-    createRulesData('Rule-Smoker', 'insurance','where smoker = yes','APPROVED', '10-02-2024', 'ATANU'),
-    createRulesData('Fees check', 'insurance','where charges > 25000','PENDING', '15-03-2024', 'satish'),
-    createRulesData('Rule-Show payment', 'payment','where payment = false and year = 2024','APPROVED', '16-03-2024', 'Arindam')
+    createRulesData('user-email-001', 'user','completeness', 'where email = NULL','APPROVED','1220', '300', '>85%', '75.4%', '01-01-2024 01:50:20', 'ATANU'),
+    createRulesData('insurance-smoker-002', 'insurance', 'accuracy', 'where smoker = yes','APPROVED','1220', '300','>90%','75.4%', '10-02-2024 12:10:10', 'ATANU'),
+    createRulesData('insurance-charges-003', 'insurance','accuracy','where charges > 25000','PENDING','1220', '300','>85%','75.4%', '15-03-2024 06:51:42', 'satish'),
+    createRulesData('payment-payment-004', 'payment','validity','where payment = false and year = 2024','APPROVED','1220', '300', '>85%','75.4%','16-03-2024 05:50:20', 'Arindam')
   ];
 
 export default function Page(): React.JSX.Element {
@@ -355,9 +360,13 @@ const handleBack = () => setRecords(true);
                                 <TableRow>
                                     <TableCell>Name</TableCell>
                                     <TableCell align="right">Table</TableCell>
+                                    <TableCell align="right">Dimension</TableCell>
                                     <TableCell align="right">Rule</TableCell>
+                                    <TableCell align="right">Total rows</TableCell>
+                                    <TableCell align="right">Pass</TableCell>
+                                    <TableCell align="right">Threshold</TableCell>
                                     <TableCell align="right">Status</TableCell>
-                                    <TableCell align="right">Created At</TableCell>
+                                    <TableCell align="right">Last Run</TableCell>
                                     <TableCell align="right">Created By</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -371,8 +380,12 @@ const handleBack = () => setRecords(true);
                                   {row.name}
                               </TableCell>
                               <TableCell align="right">{row.table}</TableCell>
+                              <TableCell align="right">{row.dimension}</TableCell>
                               <TableCell align="right">{row.rule}</TableCell>
-                              <TableCell align="right"><Chip color='primary' label={row.status} size="small" /></TableCell>
+                              <TableCell align="right">{row.total}</TableCell>
+                              <TableCell align="right">{row.pass}</TableCell>
+                              <TableCell align="right">{row.threshold}</TableCell>
+                              <TableCell align="right"><Chip style={{background: 'red', color: 'white'}} label={row.result} size="small" /></TableCell>
                               <TableCell align="right">
                                   {row.createdAt}
                               </TableCell>
